@@ -1,6 +1,6 @@
 # TBA
-Twitter brute force attack (for educational purposes)
-This file covers multithreaded attacks on multiple instances and switching IP Address after every 2-4 attemps from one instance to prevent getting IP-blocked.
+Twitter brute force attack (for educational purposes). <br>
+This attack covers attacks on multiple instances and switching IP Address after every 2-4 attemps from one instance to prevent getting IP-blocked.
 
 # How to
 1. Install Geckodriver in path (Ubuntu 18.04):
