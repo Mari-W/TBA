@@ -8,7 +8,7 @@ This attack covers attacks on multiple instances and switching IP Address after 
 export GV=v0.26.0
 wget "https://github.com/mozilla/geckodriver/releases/download/$GV/geckodriver-$GV-linux64.tar.gz"
 tar xvzf geckodriver-$GV-linux64.tar.gz
-chmod +x geckodriver<br />
+chmod +x geckodriver
 sudo cp geckodriver /usr/local/bin/
 ```
 2. Download Tor binaries (Version 9.5 or newer on Ubuntu 18.04):
