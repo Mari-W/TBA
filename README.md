@@ -15,9 +15,10 @@ sudo cp geckodriver /usr/local/bin/
 ```bash
 wget https://www.torproject.org/dist/torbrowser/9.5/tor-browser-linux64-9.5_en-US.tar.xz
 tar -xf tor-browser-linux64-9.5_en-US.tar.xz
+```
 3. Install requirements:
 ```bash
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 ```
 4. Download suitable password list from [Github](https://github.com/danielmiessler/SecLists/tree/master/Passwords)
 5. Start brute forcing using command line
