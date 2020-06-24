@@ -183,7 +183,6 @@ def bruteforce(driver):
     WebDriverWait(driver, 30).until(lambda d: d.execute_script('return document.readyState') == 'complete')
     # get current url
     url = driver.current_url
-    print(url)
 
     driver.get("http://ip.42.pl/raw")
     WebDriverWait(driver, 30).until(
