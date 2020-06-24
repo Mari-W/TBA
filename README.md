@@ -24,7 +24,7 @@ pip3 install -r requirements.txt
 5. Start brute forcing using command line
 ```bash
 python3 TBA.py <username> <path_to_password_list> <path_to_tor_binaries> -<amount_of_tor_instances_optional>
-python3 TBA.py realDonaldTrump path/to/wlist.txt path/to/tor-browser_en-US -instances 15
+python3 TBA.py myAccount path/to/wlist.txt path/to/tor-browser_en-US -instances 15
 ```
 
 # Disclaimer
