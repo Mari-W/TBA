@@ -1,5 +1,5 @@
 # TBA
-Twitter brute force attack (for educational purposes). <br>
+Twitter brute force attack <br>
 This attack covers attacks on multiple instances and switching IP Address after every 2-4 attemps from one instance to prevent getting IP-blocked.
 
 # How to
